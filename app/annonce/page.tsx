@@ -25,10 +25,13 @@ export default function CreateListing() {
     telephone: "",
     email: "",
   });
+
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -45,22 +48,25 @@ export default function CreateListing() {
       return;
     }
 
-    const { data, error } = await supabase.from("listings").insert([
-      {
-        user_id: user.id,
-        marque: formData.marque,
-        modele: formData.modele,
-        annee: formData.annee,
-        kilometrage: formData.kilometrage,
-        carburant: formData.carburant,
-        transmission: formData.transmission,
-        prix: formData.prix,
-        localisation: formData.localisation,
-        description: formData.description,
-        telephone: formData.telephone,
-        email: formData.email,
-      },
-    ]).select();
+    const { data, error } = await supabase
+      .from("listings")
+      .insert([
+        {
+          user_id: user.id,
+          marque: formData.marque,
+          modele: formData.modele,
+          annee: formData.annee,
+          kilometrage: formData.kilometrage,
+          carburant: formData.carburant,
+          transmission: formData.transmission,
+          prix: formData.prix,
+          localisation: formData.localisation,
+          description: formData.description,
+          telephone: formData.telephone,
+          email: formData.email,
+        },
+      ])
+      .select();
 
     if (error) {
       setMessage("Erreur : " + error.message);
@@ -68,23 +74,24 @@ export default function CreateListing() {
     }
 
     const listingId = data?.[0]?.id;
-    const listingUrl = `http://localhost:3000/voiture/${listingId}`;
+    const listingUrl = `${window.location.origin}/voiture/${listingId}`;
 
-    // Génération du QR Code
     setQrUrl(listingUrl);
-
     setMessage("Annonce publiée avec succès !");
   }
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow">
-        <h1 className="text-2xl font-bold mb-4 text-center">Créer une annonce</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">
+          Créer une annonce
+        </h1>
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-3">
           {Object.keys(formData).map((field) => (
             <div key={field} className="flex flex-col">
               <label className="capitalize font-medium mb-1">{field}</label>
+
               {field !== "description" ? (
                 <input
                   type="text"
@@ -118,11 +125,16 @@ export default function CreateListing() {
         {message && <p className="mt-4 text-center text-gray-700">{message}</p>}
 
         {qrUrl && (
-  <div className="mt-6 flex flex-col items-center">
-    <p className="mb-2 text-sm text-gray-600">QR Code de ton annonce :</p>
-    <QRCodeSVG value={qrUrl} size={160} />
-  </div>
-)}
+          <div className="mt-6 flex flex-col items-center">
+            <p className="mb-2 text-sm text-gray-600">
+              QR Code de ton annonce :
+            </p>
+            <QRCodeSVG value={qrUrl} size={160} />
+            <p className="mt-3 text-xs text-center text-gray-500 break-all">
+              {qrUrl}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
