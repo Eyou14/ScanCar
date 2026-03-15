@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
-import QRCode from "qrcode";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function CreateListing() {
   const supabase = createBrowserClient(
@@ -68,11 +68,10 @@ export default function CreateListing() {
     }
 
     const listingId = data?.[0]?.id;
-    const listingUrl = `[127.0.0.1](http://127.0.0.1:3000/voiture/${listingId})`;
+    const listingUrl = `http://localhost:3000/voiture/${listingId}`;
 
     // Génération du QR Code
-    const qr = await QRCode.toDataURL(listingUrl);
-    setQrUrl(qr);
+    setQrUrl(listingUrl);
 
     setMessage("Annonce publiée avec succès !");
   }
@@ -119,11 +118,11 @@ export default function CreateListing() {
         {message && <p className="mt-4 text-center text-gray-700">{message}</p>}
 
         {qrUrl && (
-          <div className="mt-6 flex flex-col items-center">
-            <p className="mb-2 text-sm text-gray-600">QR Code de ton annonce :</p>
-            <img src={qrUrl} alt="QR Code" className="w-32 h-32 border" />
-          </div>
-        )}
+  <div className="mt-6 flex flex-col items-center">
+    <p className="mb-2 text-sm text-gray-600">QR Code de ton annonce :</p>
+    <QRCodeSVG value={qrUrl} size={160} />
+  </div>
+)}
       </div>
     </div>
   );
